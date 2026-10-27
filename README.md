@@ -1,2 +1,1 @@
-# Simulasi-sidang-pai
-Simulasi sidang 
+Simulasi_Sidang_PAI_game_interaktif-3.html menjadi index.html
