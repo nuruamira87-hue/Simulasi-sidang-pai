@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Simulasi Sidang – PAI</title>
+<style>
+:root{--bg:#f4f0ff;--card:#fff;--tx:#292044;--mut:#716987;--ac:#7655e8;--bd:#e5def8;--ok:#16875d;--no:#d34b61;box-sizing:border-box}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(circle at top left,#e1d7ff 0,transparent 36%),radial-gradient(circle at bottom right,#ffe1ef 0,transparent 34%),#f7f5ff;color:var(--tx);font:16px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif;min-height:100vh}
+main{max-width:600px;margin:0 auto;padding:22px 16px 42px}
+h1{font-size:clamp(27px,7vw,36px);line-height:1.15;margin:0 0 9px;letter-spacing:-.7px}h2{font-size:20px;line-height:1.3;margin:0 0 10px}.mut{color:var(--mut);font-size:14px}
+.hero{text-align:center;padding:26px 18px 22px;background:linear-gradient(135deg,#7655e8,#a45de4 55%,#ed78b5);border-radius:28px;color:white;box-shadow:0 14px 30px #6d50c52b;margin:4px 0 18px;position:relative;overflow:hidden}
+.hero .emoji{font-size:58px;display:block;margin-bottom:8px;filter:drop-shadow(0 4px 3px #3b236444)}.hero p{margin:8px auto 0;max-width:420px;color:#f8f3ff}.eyebrow{font-size:12px;font-weight:800;letter-spacing:1.6px;text-transform:uppercase;opacity:.9}
+.card{background:rgba(255,255,255,.94);border:1px solid var(--bd);border-radius:20px;padding:18px;margin:14px 0;box-shadow:0 7px 20px #4a2d8710}
+button{font:inherit;width:100%;text-align:left;background:#fff;color:var(--tx);border:2px solid var(--bd);border-radius:15px;padding:13px 15px;margin:7px 0;cursor:pointer;transition:transform .12s,border-color .12s,box-shadow .12s}
+button:active{transform:scale(.985)}button:hover{border-color:#b9a7f5;box-shadow:0 4px 12px #7655e81a}button.pri{background:linear-gradient(100deg,#7655e8,#a35de4);color:white;border:0;text-align:center;font-weight:800;padding:15px 18px;box-shadow:0 7px 15px #7655e82b}
+button.back{width:auto;display:inline-block;text-align:center;padding:8px 13px;font-size:14px;background:#f0ebff;border:0;color:#6446ce}.tag{display:inline-block;font-size:12px;font-weight:800;background:#efe9ff;color:#6545d0;border-radius:99px;padding:5px 11px;margin-bottom:8px}
+.role-emoji{font-size:27px;display:inline-block;margin-right:8px;vertical-align:middle}.role-title{font-weight:800}.role-desc{display:block;font-size:13px;color:var(--mut);padding-left:38px}.fb{border-left:5px solid var(--ok);padding:12px 13px;margin:12px 0;background:#e9faf2;border-radius:10px;color:#175c42}.fb.bad{border-color:var(--no);background:#fff0f2;color:#872c40}
+.bar{height:9px;background:#e7e0f7;border-radius:99px;overflow:hidden;margin:9px 0}.bar i{display:block;height:100%;background:linear-gradient(90deg,#7655e8,#e16bb5);border-radius:99px;transition:width .2s}.question-num{display:flex;justify-content:space-between;gap:12px;color:var(--mut);font-size:13px;font-weight:700}.answer{min-height:52px}.answer.correct{border-color:#37b983;background:#edfff6}.answer.wrong{border-color:#e87889;background:#fff1f3}.score-circle{width:116px;height:116px;border-radius:50%;background:linear-gradient(135deg,#7655e8,#e16bb5);color:white;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:900;margin:10px auto 18px;box-shadow:0 8px 18px #7655e82b}.pill{display:inline-block;background:#f0ebff;border-radius:12px;padding:7px 10px;font-size:13px;color:#6446ce;margin:3px}
+</style>
+</head>
+<body>
+<main id="app"></main>
+<script>
+var CASE={t:"Kasus: Sengketa Utang Piutang",d:"Budi menggugat Candra. Budi mengaku meminjamkan Rp5.000.000 sebulan lalu. Candra membantah dan mengatakan itu hanya pemberian. Tidak ada catatan tertulis, tetapi ada dua orang yang mengaku melihat penyerahan uang."};
+var ROLES={
+hakim:{n:"Hakim (Qadhi)",e:"⚖️",i:"Pimpin sidang dengan adil dan putuskan perkara.",s:[
+{q:"Sidang dibuka. Salah satu saksi adalah kerabat dekat Budi. Apa sikapmu?",o:[
+["Menerima kesaksiannya begitu saja karena ia sudah bersumpah.",0,"Hakim perlu menilai keadilan dan netralitas saksi. Kerabat dekat bisa menimbulkan keraguan (QS. An-Nisa: 135 mengingatkan agar kesaksian tegak karena Allah)."],
+["Mendengar kedua pihak dulu, lalu menilai kejujuran dan netralitas saksi.",2,"Tepat. Hakim mendengar kedua belah pihak dan menimbang keadilan saksi (QS. Al-Ma’idah: 8)."],
+["Menolak semua saksi tanpa mendengarnya.",0,"Menolak tanpa pemeriksaan juga tidak adil. Tabayyun (QS. Al-Hujurat: 6) menuntut klarifikasi lebih dulu."]]},
+{q:"Candra tetap menyangkal. Siapa yang wajib membuktikan?",o:[
+["Candra, karena ia yang dituduh.",0,"Keliru. Kaidahnya: bukti dibebankan kepada penggugat."],
+["Budi sebagai penggugat. Jika bukti kurang, Candra bisa diminta bersumpah.",2,"Benar. Hadis: bukti wajib bagi penggugat, sumpah bagi yang mengingkari (HR. Al-Baihaqi)."],
+["Tidak perlu bukti, cukup lihat siapa yang lebih meyakinkan.",0,"Putusan harus bersandar pada bukti, bukan kesan semata."]]},
+{q:"Bukti kuat dan Candra terbukti berutang. Bagaimana putusanmu?",o:[
+["Memerintahkan Candra melunasi dan menasihati kedua pihak agar mencatat utang di masa depan.",2,"Baik. Putusan menegakkan hak, dan nasihat sejalan dengan anjuran mencatat utang (QS. Al-Baqarah: 282)."],
+["Menghukum Candra lebih berat karena kesal pada sikapnya.",0,"Hakim tidak boleh memutus karena emosi. Hukuman harus sepadan dan adil."],
+["Menunda tanpa batas waktu agar tidak ada yang kecewa.",0,"Menunda keadilan tanpa alasan adalah bentuk kezaliman."]]}]},
+penggugat:{n:"Penggugat (Budi)",e:"📜",i:"Buktikan klaimmu dengan cara yang jujur.",s:[
+{q:"Kamu tidak punya catatan tertulis. Apa langkahmu?",o:[
+["Menghadirkan dua orang yang benar-benar melihat penyerahan uang.",2,"Tepat. Saksi adalah salah satu bukti yang diakui (QS. Al-Baqarah: 282)."],
+["Meminta teman menjadi saksi walau ia tidak melihat langsung.",0,"Itu kesaksian palsu, dosa besar. Kesaksian harus berdasar apa yang diketahui."],
+["Mengaku punya catatan padahal tidak ada.",0,"Berbohong di hadapan hakim merusak kehormatan dan keadilan."]]},
+{q:"Candra membantah dengan keras di sidang. Responsmu?",o:[
+["Tetap tenang, sopan, dan menyampaikan fakta.",2,"Bagus. Adab dalam berperkara mencerminkan akhlak seorang Muslim."],
+["Membalas dengan hinaan.",0,"Menghina menyalahi akhlak, dan melemahkan posisimu."],
+["Marah lalu meninggalkan sidang.",0,"Meninggalkan sidang bisa merugikan hakmu sendiri."]]},
+{q:"Hakim meminta Candra bersumpah dan ia bersedia. Setelah putusan, bagaimana sikapmu?",o:[
+["Menerima putusan dengan lapang dada, menyerahkan sisanya kepada Allah.",2,"Tepat. Putusan hakim menyelesaikan sengketa secara lahir, dan urusan batin kembali kepada Allah."],
+["Menyebarkan tuduhan buruk tentang Candra.",0,"Itu fitnah dan ghibah, dilarang dalam Islam."],
+["Menolak putusan tanpa dasar.",0,"Menolak putusan tanpa alasan menyalahi semangat penyelesaian sengketa."]]}]},
+tergugat:{n:"Tergugat (Candra)",e:"🧑",i:"Hadapi gugatan dengan kejujuran dan adab.",s:[
+{q:"Kamu sebenarnya memang meminjam uang itu, tapi takut mengakuinya. Apa yang kamu lakukan?",o:[
+["Mengaku jujur dan meminta keringanan waktu pelunasan.",2,"Terbaik. Kejujuran dicintai Allah, dan keringanan boleh diminta secara baik."],
+["Tetap menyangkal dan berani bersumpah.",0,"Sumpah palsu termasuk dosa besar. Jangan menukar kejujuran dengan harta."],
+["Mengajak saksi palsu untuk membelamu.",0,"Menghadirkan saksi palsu adalah kezaliman berlapis."]]},
+{q:"Hakim menanyakan pendapatmu soal saksi Budi. Bagaimana kamu menanggapi?",o:[
+["Menyampaikan keberatan dengan sopan jika memang ada alasan yang benar.",2,"Tepat. Hak membela diri dijaga, selama disampaikan jujur dan beradab."],
+["Menuduh semua saksi berbohong tanpa alasan.",0,"Tuduhan tanpa bukti tidak dibenarkan."],
+["Diam saja sepanjang sidang.",1,"Diam tidak melanggar, tetapi kamu kehilangan hak membela diri."]]},
+{q:"Putusan menyatakan kamu harus melunasi. Apa yang kamu lakukan?",o:[
+["Menerima, lalu menunaikan utang secepatnya.",2,"Tepat. Menunaikan utang adalah kewajiban, dan menunda padahal mampu adalah kezaliman (hadis)."],
+["Berusaha menghindar dari pelunasan.",0,"Menghindari pelunasan menambah dosa dan merusak kepercayaan."],
+["Menyalahkan hakim di depan umum.",0,"Itu tidak beradab dan tidak menyelesaikan masalah."]]}]}
+};
+var app=document.getElementById("app"),role=null,step=0,score=0,answered=false;
+function esc(s){return s}
+function intro(){
+ app.innerHTML='<section class="hero"><span class="emoji">⚖️📚</span><div class="eyebrow">Game Edukasi Interaktif</div><h1>Simulasi Sidang</h1><p>PAI · Belajar keadilan, kejujuran, dan adab melalui sebuah kasus!</p></section><div class="card"><span class="tag">📌 Misi permainan</span><h2>'+CASE.t+'</h2><p>'+CASE.d+'</p></div><div class="card"><h2>🎮 Cara bermain</h2><p>1. Pilih peran yang ingin kamu mainkan.</p><p>2. Jawab 3 pertanyaan sesuai peranmu.</p><p>3. Baca umpan balik dan dalil/nilai Islam yang menyertainya.</p><p>4. Kumpulkan poin sebanyak mungkin. Skor maksimal adalah 6!</p><span class="pill">⏱️ 3 pertanyaan</span><span class="pill">⭐ Skor maksimal 6</span></div><button class="pri" onclick="home()">Mulai Bermain 🚀</button>';
+}
+function home(){
+ var h='<button class="back" onclick="intro()">← Kembali</button><section class="hero"><span class="emoji">🎭</span><h1>Pilih Peranmu!</h1><p>Siapa yang akan kamu perankan dalam persidangan ini?</p></section>';
+ for(var k in ROLES){h+='<button onclick="start(\''+k+'\')"><span class="role-emoji">'+ROLES[k].e+'</span><span class="role-title">'+ROLES[k].n+'</span><span class="role-desc">'+ROLES[k].i+'</span></button>'}
+ app.innerHTML=h}
+function start(k){role=k;step=0;score=0;show()}
+function show(){
+ var r=ROLES[role],s=r.s[step];answered=false;
+ var h='<button class="back" onclick="home()">← Ganti peran</button><span class="tag">'+r.e+' '+r.n+'</span><div class="question-num"><span>Pertanyaan '+(step+1)+' dari 3</span><span>⭐ '+score+' poin</span></div><div class="bar"><i style="width:'+((step+1)/3*100)+'%"></i></div><div class="card"><h2>🤔 '+s.q+'</h2></div><div id="opts">';
+ s.o.forEach(function(o,i){h+='<button class="answer" id="ans'+i+'" onclick="pick('+i+')"><b>'+(String.fromCharCode(65+i))+'.</b> '+o[0]+'</button>'});
+ app.innerHTML=h+'</div><div id="fb"></div>'}
+function pick(i){
+ if(answered)return;answered=true;
+ var o=ROLES[role].s[step].o[i];score+=o[1];
+ var buttons=document.querySelectorAll('.answer');buttons.forEach(function(b,j){b.disabled=true;if(ROLES[role].s[step].o[j][1]===2)b.classList.add('correct');if(j===i&&o[1]!==2)b.classList.add('wrong')});
+ var last=step==2;
+ document.getElementById("fb").innerHTML='<div class="fb'+(o[1]==2?'':' bad')+'">'+(o[1]==2?'✅ ':o[1]==1?'⚠️ ':'❌ ')+o[2]+'</div><button class="pri" onclick="next()">'+(last?'Lihat hasil':'Lanjut')+'</button>'}
+function next(){step++;if(step<3)show();else end()}
+function end(){
+ var m=score>=6?"Mumtaz! Kamu menjalankan peran dengan adil, jujur, dan beradab.":score>=4?"Baik. Masih ada beberapa keputusan yang bisa lebih sesuai nilai Islam.":"Perlu belajar lagi. Coba ulangi dan perhatikan dalil di setiap umpan balik.";
+ app.innerHTML='<section class="hero"><span class="emoji">'+(score>=5?'🏆':score>=3?'🌟':'💪')+'</span><h1>Permainan Selesai!</h1><p>Hebat, kamu sudah menyelesaikan simulasi sidang.</p></section><div class="card"><span class="tag">📊 Hasil permainan</span><h2>'+ROLES[role].e+' '+ROLES[role].n+'</h2><div class="score-circle">'+score+' / 6</div><p style="text-align:center">'+m+'</p></div><button class="pri" onclick="start(\''+role+'\')">🔄 Mainkan Lagi</button><button onclick="home()" style="text-align:center">🎭 Pilih Peran Lain</button><button onclick="intro()" style="text-align:center">🏠 Halaman Awal</button>'}
+intro();
+</script>
+</body>
+</html>
